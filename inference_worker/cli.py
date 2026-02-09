@@ -5,6 +5,7 @@ import logging
 import os
 import sys
 import threading
+import webbrowser
 
 # With PyInstaller --noconsole, sys.stdout/stderr can be None and uvicorn's formatter fails.
 if sys.stdout is None:
@@ -27,7 +28,6 @@ def _has_display() -> bool:
             return True
         return os.environ.get("SESSIONNAME") is not None or os.environ.get("DISPLAY") is not None
     if sys.platform == "darwin":
-        # macOS uses Quartz, not X11 — if we're not in an SSH session, assume display
         return not os.environ.get("SSH_CONNECTION")
     return bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
 
@@ -63,8 +63,8 @@ def main():
         prog="grid-inference-worker",
         description="Turn-key text inference worker for AI Power Grid",
     )
-    parser.add_argument("--headless", action="store_true",
-                        help="Skip the desktop GUI window")
+    parser.add_argument("--gui", action="store_true",
+                        help="Show the desktop control window (Tkinter)")
     parser.add_argument("--model", metavar="NAME",
                         help="Model name (e.g. llama3.2:3b)")
     parser.add_argument("--backend-url", metavar="URL",
@@ -110,8 +110,6 @@ def main():
     port = args.port
     url = f"http://localhost:{port}"
 
-    show_gui = _has_display() and not args.headless
-
     # Start web server in background thread
     def run_server():
         import uvicorn
@@ -121,13 +119,15 @@ def main():
     server_thread = threading.Thread(target=run_server, daemon=True)
     server_thread.start()
 
-    if show_gui:
+    if args.gui and _has_display():
         from . import gui
         gui.run(url)
     else:
-        # Headless: print URL and block until Ctrl+C
+        # Console mode: print URL, auto-open browser if display available
         logger = logging.getLogger(__name__)
         logger.info(f"Dashboard: {url}")
+        if _has_display():
+            webbrowser.open(url)
         try:
             server_thread.join()
         except KeyboardInterrupt:

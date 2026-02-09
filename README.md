@@ -41,7 +41,7 @@ grid-inference-worker \
 --api-key KEY           Grid API key
 --worker-name NAME      Worker name on the grid
 --port PORT             Web dashboard port (default: 7861)
---headless              Skip the desktop control window
+--gui                   Show the desktop control window (Tkinter)
 --install-service       Install as a system service (auto-start on boot)
 --uninstall-service     Remove the system service
 --service-status        Check if the service is installed
