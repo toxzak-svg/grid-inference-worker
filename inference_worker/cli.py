@@ -25,6 +25,9 @@ def _has_display() -> bool:
         if getattr(sys, "frozen", False):
             return True
         return os.environ.get("SESSIONNAME") is not None or os.environ.get("DISPLAY") is not None
+    if sys.platform == "darwin":
+        # macOS uses Quartz, not X11 — if we're not in an SSH session, assume display
+        return not os.environ.get("SSH_CONNECTION")
     return bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
 
 

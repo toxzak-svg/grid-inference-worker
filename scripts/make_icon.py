@@ -11,6 +11,8 @@ import xml.etree.ElementTree as ET
 WINDOWS_ICO_SIZES = [(256, 256), (48, 48), (32, 32), (24, 24), (20, 20), (16, 16)]
 # Web favicon: 16 and 32 are standard; 48 for high-DPI.
 FAVICON_ICO_SIZES = [(48, 48), (32, 32), (16, 16)]
+# macOS .icns requires specific sizes (includes @2x retina variants).
+ICNS_SIZES = [16, 32, 64, 128, 256, 512, 1024]
 
 
 def _hex_to_rgba(h):
@@ -183,6 +185,19 @@ def main():
         out = os.path.join(static_dir, f"favicon-{w}x{h}.png")
         img.resize((w, h), resample).save(out, format="PNG")
         print(f"Created {out}")
+
+    # 4) macOS .icns — Pillow writes ICNS from a list of sizes
+    icns_path = os.path.join(repo_root, "icon.icns")
+    try:
+        sizes_for_icns = [s for s in ICNS_SIZES if s <= max(img.size)]
+        frames = [img.resize((s, s), resample) for s in sizes_for_icns]
+        frames[0].save(
+            icns_path, format="ICNS",
+            append_images=frames[1:],
+        )
+        print(f"Created {icns_path}")
+    except Exception as e:
+        print(f"ICNS generation failed ({e}), skipping")
 
 
 if __name__ == "__main__":

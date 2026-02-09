@@ -45,6 +45,8 @@ jobs:
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             SEP=";"
             PLATFORM_ARGS="--noconsole --icon favicon.ico --manifest app.manifest"
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            PLATFORM_ARGS="--icon icon.icns"
           fi
 
           python -m PyInstaller --onefile --name grid-inference-worker \
