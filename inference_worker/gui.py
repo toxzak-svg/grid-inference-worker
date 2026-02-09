@@ -96,11 +96,7 @@ def run():
     title_font = ("Segoe UI", 11, "bold") if sys.platform == "win32" else ("TkDefaultFont", 11, "bold")
     tk.Label(main_f, text="Grid Inference Worker", fg="#f1f5f9", bg="#1e293b", font=title_font).pack(pady=(0, 16))
 
-    btn_bg = "#1e293b"
-    btn_fg = "#f1f5f9"
-    btn_face = "#334155"
-    btn_active = "#475569"
-    btn_f = tk.Frame(main_f, bg=btn_bg)
+    btn_f = tk.Frame(main_f, bg="#1e293b")
     btn_f.pack(fill=tk.X)
 
     def install_service_action():
@@ -122,14 +118,26 @@ def run():
         ("Restart worker", lambda: (subprocess.Popen([sys.executable] + sys.argv), root.destroy(), sys.exit(0))),
         ("Exit", lambda: (root.destroy(), sys.exit(0))),
     ]
+
+    is_mac = sys.platform == "darwin"
     for label, cmd in buttons:
-        b = tk.Button(
-            btn_f, text=label, command=cmd,
-            bg=btn_face, fg=btn_fg, activebackground=btn_active, activeforeground=btn_fg,
-            highlightbackground=btn_bg, highlightcolor=btn_bg,
-            relief=tk.FLAT, borderwidth=0, padx=12, pady=6, cursor="hand2",
-            font=("Segoe UI", 9) if sys.platform == "win32" else ("TkDefaultFont", 9),
-        )
+        if is_mac:
+            # macOS Aqua ignores bg/fg on buttons — use native styling
+            b = tk.Button(
+                btn_f, text=label, command=cmd,
+                highlightbackground="#1e293b",
+                padx=12, pady=6, cursor="hand2",
+                font=("TkDefaultFont", 9),
+            )
+        else:
+            b = tk.Button(
+                btn_f, text=label, command=cmd,
+                bg="#334155", fg="#f1f5f9",
+                activebackground="#475569", activeforeground="#f1f5f9",
+                highlightbackground="#1e293b", highlightcolor="#1e293b",
+                relief=tk.FLAT, borderwidth=0, padx=12, pady=6, cursor="hand2",
+                font=("Segoe UI", 9),
+            )
         b.pack(fill=tk.X, pady=4)
 
     root.protocol("WM_DELETE_WINDOW", lambda: (root.destroy(), sys.exit(0)))
