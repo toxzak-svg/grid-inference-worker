@@ -55,6 +55,7 @@ if (-not $OneDir) {
   $pyiArgs = @(
     "--noconfirm"
     "--noconsole"
+    "--noupx"
     "--clean"
     "--name", "grid-inference-worker"
     , $iconArg

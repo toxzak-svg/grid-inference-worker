@@ -49,7 +49,7 @@ jobs:
             PLATFORM_ARGS="--windowed --icon icon.icns"
           fi
 
-          python -m PyInstaller --onefile --name grid-inference-worker \
+          python -m PyInstaller --onefile --noupx --name grid-inference-worker \
             --add-data "inference_worker/web/templates${SEP}inference_worker/web/templates" \
             --add-data "inference_worker/web/static${SEP}inference_worker/web/static" \
             --add-data "favicon.ico${SEP}." \
