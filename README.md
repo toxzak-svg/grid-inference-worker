@@ -23,6 +23,10 @@ Grab the latest binary for your platform from [Releases](https://github.com/AIPo
 
 No Python or dependencies needed. Just install a backend (Ollama is easiest), run the worker, and follow the wizard.
 
+You'll need a Grid API key — [register here](https://api.aipowergrid.io/register).
+
+Once your worker is running, chat with your model at [aipg.chat](https://aipg.chat) — select your model in the upper selector.
+
 ## CLI Flags
 
 Override config from the command line. The web dashboard is always available at `http://localhost:7861` regardless of how you start the worker.
@@ -53,7 +57,7 @@ Copy `.env.example` to `.env` and fill in your values, or configure through the 
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `GRID_API_KEY` | *(required)* | Your Grid API key |
+| `GRID_API_KEY` | *(required)* | Your Grid API key ([register](https://api.aipowergrid.io/register)) |
 | `MODEL_NAME` | | Model to serve (e.g. `llama3.2:3b`) |
 | `BACKEND_TYPE` | `ollama` | `ollama` or `openai` |
 | `OLLAMA_URL` | `http://127.0.0.1:11434` | Ollama endpoint |
