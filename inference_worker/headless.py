@@ -143,6 +143,21 @@ def quick_setup() -> dict:
     worker_name = input("  Worker name [Text-Inference-Worker]: ").strip()
     config["GRID_WORKER_NAME"] = worker_name or "Text-Inference-Worker"
 
+    # --- Streaming mode ---
+    print()
+    print("  Connection mode:")
+    print("    [1] Standard — HTTP polling (compatible with all setups)")
+    print("    [2] Streaming — WebSocket + token streaming (faster, real-time)")
+    stream_choice = input("  [1]: ").strip()
+    if stream_choice == "2":
+        config["GRID_STREAMING"] = "true"
+        streaming_url = input("  Streaming API URL [auto]: ").strip()
+        if streaming_url:
+            config["GRID_STREAMING_URL"] = streaming_url
+        print("  ⚡ Streaming mode enabled")
+    else:
+        config["GRID_STREAMING"] = "false"
+
     # --- Enlistment test ---
     print()
     print(f"  Enlisting {model}...", flush=True)
@@ -224,6 +239,8 @@ def run(args):
             Settings.OPENAI_URL = url + "/v1"
     if args.worker_name:
         Settings.GRID_WORKER_NAME = args.worker_name
+    if getattr(args, "streaming", False):
+        Settings.GRID_STREAMING = True
 
     if not is_configured():
         if args.no_setup:
@@ -239,9 +256,14 @@ def run(args):
     print("  Starting worker...")
     print()
 
-    from .worker import TextWorker
-
-    worker = TextWorker()
+    from .config import Settings
+    if Settings.GRID_STREAMING:
+        from .ws_client import StreamingWorker
+        worker = StreamingWorker()
+        print("  ⚡ Streaming mode — WebSocket connection")
+    else:
+        from .worker import TextWorker
+        worker = TextWorker()
 
     async def _run():
         try:

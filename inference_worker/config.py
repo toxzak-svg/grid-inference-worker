@@ -59,6 +59,10 @@ class Settings:
     # Grid model name (what to advertise to the grid, with domain prefix)
     GRID_MODEL_NAME = os.getenv("GRID_MODEL_NAME", "")
 
+    # Streaming mode — connect via WebSocket instead of HTTP polling
+    GRID_STREAMING = os.getenv("GRID_STREAMING", "false").lower() == "true"
+    GRID_STREAMING_URL = os.getenv("GRID_STREAMING_URL", "")  # Override WS URL (auto-derived from GRID_API_URL if empty)
+
     # Wallet address for rewards (Base chain)
     WALLET_ADDRESS = os.getenv("WALLET_ADDRESS", "")
 

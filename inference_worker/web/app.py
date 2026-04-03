@@ -59,7 +59,13 @@ worker_state = {
 
 async def _run_worker():
     """Run the text worker loop as a background task."""
-    worker = TextWorker()
+    from ..config import Settings
+    if Settings.GRID_STREAMING:
+        from ..ws_client import StreamingWorker
+        worker = StreamingWorker()
+        logger.info("⚡ Streaming mode enabled — connecting via WebSocket")
+    else:
+        worker = TextWorker()
     worker_state["worker"] = worker
     worker_state["running"] = True
     worker_state["error"] = None
