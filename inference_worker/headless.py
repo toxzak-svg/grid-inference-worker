@@ -257,7 +257,11 @@ def run(args):
     print()
 
     from .config import Settings
-    if Settings.GRID_STREAMING:
+    if Settings.P2P_ENABLED:
+        from .p2p_client import P2PWorker
+        worker = P2PWorker()
+        print("  🔗 P2P mode — libp2p gossipsub connection")
+    elif Settings.GRID_STREAMING:
         from .ws_client import StreamingWorker
         worker = StreamingWorker()
         print("  ⚡ Streaming mode — WebSocket connection")
@@ -271,7 +275,12 @@ def run(args):
         except asyncio.CancelledError:
             pass
         finally:
-            await worker.cleanup()
+            if hasattr(worker, 'cleanup'):
+                await worker.cleanup()
+            elif hasattr(worker, 'stop'):
+                await worker.stop()
+            elif hasattr(worker, 'close'):
+                await worker.close()
 
     try:
         asyncio.run(_run())
